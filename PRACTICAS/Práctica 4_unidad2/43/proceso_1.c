@@ -1,8 +1,11 @@
-#include <stdio.h>
-#include <sys/ipc.h>
+
 #include <sys/msg.h>
 #include <sys/types.h>
 #include <string.h>
+
+#include <stdio.h>
+#include <sys/ipc.h>
+
 #define SEND_KEY 3
 #define RCV_KEY 2
 
@@ -33,6 +36,10 @@ int main(){
         con las caracteristicas.*/
         while(1){
             escritor.tipo_mensaje_evitar_vacios=SEND_KEY;
+
+            /*
+                Impresion 
+            */
             printf("--[P1]Escribe algo\n");
 
             scanf(" %[^\n]",escritor.mensajito);

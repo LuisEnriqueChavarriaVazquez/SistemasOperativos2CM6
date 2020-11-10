@@ -10,6 +10,7 @@ es necesario.*/
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdio.h>
+
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/syscall.h>
@@ -23,10 +24,10 @@ typedef struct{
     pid_t identificador_pid;   
     pid_t identificador_tid;  
     pthread_t ptid;    
-} data;
+} datos;
 
 void *foo(void *args){
-    data *referencia = (data *) args;
+    datos *referencia = (datos *) args;
 
     referencia->ptid = pthread_self();
     referencia->identificador_pid  = getpid();
@@ -44,7 +45,7 @@ void spawnThreads(unsigned int numeroHilosDefinidos)
 
     for (contador = 0; contador < numeroHilosDefinidos; contador++)
     {
-        data *referenciaExterna = malloc(sizeof(data) * numeroHilosDefinidos);
+        datos *referenciaExterna = malloc(sizeof(datos) * numeroHilosDefinidos);
         memset(referenciaExterna, '\0', sizeof(*referenciaExterna));
 
         referenciaExterna->contador = contador;
@@ -57,7 +58,7 @@ void spawnThreads(unsigned int numeroHilosDefinidos)
 
     for (int contador = 0; contador < numeroHilosDefinidos; ++contador)
     {
-        data *estadoActual;
+        datos *estadoActual;
 
         referente = pthread_join(identificadores_tids[contador], (void *) &estadoActual);
 

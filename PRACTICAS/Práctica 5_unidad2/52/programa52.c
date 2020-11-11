@@ -34,7 +34,11 @@ int main ()
    pthread_join(id_hilo1,NULL);
    pthread_join(id_hilo2,NULL);
    printf("\nHilos finalizados\n");
+<<<<<<< HEAD
    //se imprime el resultado de la operacion de los hilos
+=======
+   //se imprimer el resultado de la operacion de los hilos
+>>>>>>> 17c8a9f6c2f20a6a70c0f1ec34499e535d62898c
    //si todo es correcto se deberia mostrar 3
    printf("Valor de la variable global: %d \n",N);
    

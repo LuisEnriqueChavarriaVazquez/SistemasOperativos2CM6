@@ -1,80 +1,72 @@
-#include <signal.h> 
-#include <stdio.h> 
-#include <stdlib.h> 
 #include <string.h> 
 #include <sys/ipc.h> 
 #include <sys/shm.h> 
 #include <sys/types.h> 
 #include <unistd.h> 
 
-#define FILLED 0 
-#define Ready 1 
-#define NotReady -1 
+#include <signal.h> 
+#include <stdio.h> 
+#include <stdlib.h> 
 
-struct memory { 
-	char buff[100]; 
-	int status, pid1, pid2; 
+#define LLENADO 0 
+#define listo 1 
+#define Nolisto -1 
+
+struct memoria { 
+	char buff[300]; 
+	int estado, primer_pid1, segundo_pid2; 
 }; 
-
-struct memory* shmptr; 
-
-// handler function to print message received from user1 
-
-void handler(int signum) 
-{ 
-	// if signum is SIGUSR2, then user 2 is receiving a message from user1 
-
-	if (signum == SIGUSR2) { 
+struct memoria* shared_memory_seguidor; 
+void manejador(int signum) { 
+	// Recibimos mensaje
+	if (signum == seguidor_dos) { 
 		printf("Recibo = "); 
-		puts(shmptr->buff); 
+		puts(shared_memory_seguidor->buff); 
 	} 
 } 
 
-// main function 
 
-int main() 
-{ 
-	// process id of user2 
+int main() { 
+	/*
+		Acceso al identificador del derivado
+	*/
 	int pid = getpid(); 
 
-	int shmid; 
+	int shared_memory_identificador; 
+	/*
+		Generamos una llave para nuestro 
+		sistema de memoria compartida.
 
-	// key value of shared memory 
-	int key = 12345; 
+		*Procedemos a  crear la memoria
+		compartida.
 
-	// shared memory create 
+		*Pegamos la memoria compatida.
 
-	shmid = shmget(key, sizeof(struct memory), IPC_CREAT | 0666); 
+	*/
+	int llave = 123; 
+	shared_memory_identificador = shmget(llave, sizeof(struct memoria), IPC_CREAT | 0666); 
+	shared_memory_seguidor = (struct memoria*)shmat(shared_memory_identificador, NULL, 0); 
 
-	// attaching the shared memory 
+	// Guardamos la ID en la memoria compartida
+	// Guardamos el estado en la memoria compartida.
+	shared_memory_seguidor->segundo_pid2 = pid; 
+	shared_memory_seguidor->estado = Nolisto; 
 
-	shmptr = (struct memory*)shmat(shmid, NULL, 0); 
-
-	// store the process id of user2 in shared memory 
-	shmptr->pid2 = pid; 
-
-	shmptr->status = NotReady; 
-
-	// calling the signal function using signal type SIGUSR2 
-	signal(SIGUSR2, handler); 
+	// usamos la seña para el llamado y la
+	// interacción con memoria compartida.
+	signal(seguidor_dos, manejador); 
 
 	while (1) { 
 		sleep(1); 
-
-		// taking input from user2 
-
 		printf("-----Escritura == "); 
-		fgets(shmptr->buff, 100, stdin); 
-		shmptr->status = Ready; 
+		fgets(shared_memory_seguidor->buff, 300, stdin); 
 
-		// sending the message to user1 using kill function 
-
-		kill(shmptr->pid1, SIGUSR1); 
-
-		while (shmptr->status == Ready) 
+		/*Enviamos la info al otro lado con 
+		nuestra función de KILL*/
+		shared_memory_seguidor->estado = listo; 
+		kill(shared_memory_seguidor->primer_pid1, seguidor_uno); 
+		while (shared_memory_seguidor->estado == listo) 
 			continue; 
-	} 
-
-	shmdt((void*)shmptr); 
+	}shmdt((void*)shared_memory_seguidor); 
 	return 0; 
 } 

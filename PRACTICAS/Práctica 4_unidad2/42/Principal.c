@@ -1,11 +1,13 @@
-#include <signal.h> 
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <signal.h>
 #include <string.h> 
 #include <sys/ipc.h> 
 #include <sys/shm.h> 
+
 #include <sys/types.h> 
-#include <unistd.h> 
+#include <unistd.h>  
+#include <stdio.h> 
+#include <stdlib.h> 
+
 
 #define LLENADO 0 
 #define Listo 1 

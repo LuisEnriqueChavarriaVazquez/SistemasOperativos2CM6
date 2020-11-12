@@ -25,8 +25,7 @@ void Hilo2(void){
    sleep(2);
 }
 
-int main()
-{
+int main(){
   
    pid_t pid;
    pthread_attr_t atributos;
@@ -52,7 +51,5 @@ int main()
 	      sleep(2);
 	   }
    }
-
-  
    return 0;
 }
